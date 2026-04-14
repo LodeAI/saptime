@@ -92,7 +92,7 @@
   // Apply theme immediately to prevent flash
   (function(){
     var saved = localStorage.getItem('ewm-ts-theme');
-    var theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
   })();
 </script>
@@ -113,20 +113,20 @@
   }
 
   [data-theme="dark"] {
-    --bg-primary: #0a0e17;
-    --bg-card: #161e2e;
-    --bg-input: #0d1320;
-    --border: #1e2a3a;
-    --text-primary: #e2e8f0;
-    --text-secondary: #94a3b8;
-    --text-muted: #475569;
-    --sap-gold-dim: rgba(240, 171, 0, 0.12);
+    --bg-primary: #111827;
+    --bg-card: #1e293b;
+    --bg-input: #162032;
+    --border: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --sap-gold-dim: rgba(240, 171, 0, 0.15);
     --grid-color: rgba(59,130,246,0.03);
     --glow-color: rgba(59,130,246,0.06);
-    --h1-from: #e2e8f0;
-    --h1-to: #94a3b8;
-    --card-hover-border: rgba(59,130,246,0.25);
-    --picker-filter: invert(0.6);
+    --h1-from: #f1f5f9;
+    --h1-to: #cbd5e1;
+    --card-hover-border: rgba(59,130,246,0.35);
+    --picker-filter: invert(0.7);
     color-scheme: dark;
   }
 
