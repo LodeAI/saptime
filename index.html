@@ -44,7 +44,7 @@
   "author": {
     "@type": "Organization",
     "name": "LV IT Consulting",
-    "url": "https://lvit.be/"
+    "url": "https://www.lvit.be/"
   },
   "about": {
     "@type": "Thing",
@@ -92,7 +92,7 @@
   // Apply theme immediately to prevent flash
   (function(){
     var saved = localStorage.getItem('ewm-ts-theme');
-    var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var theme = saved || 'light';
     document.documentElement.setAttribute('data-theme', theme);
   })();
 </script>
@@ -113,20 +113,20 @@
   }
 
   [data-theme="dark"] {
-    --bg-primary: #111827;
-    --bg-card: #1e293b;
-    --bg-input: #162032;
-    --border: #334155;
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-muted: #64748b;
-    --sap-gold-dim: rgba(240, 171, 0, 0.15);
-    --grid-color: rgba(59,130,246,0.03);
-    --glow-color: rgba(59,130,246,0.06);
-    --h1-from: #f1f5f9;
-    --h1-to: #cbd5e1;
-    --card-hover-border: rgba(59,130,246,0.35);
-    --picker-filter: invert(0.7);
+    --bg-primary: #1a2030;
+    --bg-card: #242e42;
+    --bg-input: #1e2840;
+    --border: #3d4f6a;
+    --text-primary: #f8fafc;
+    --text-secondary: #d4dce8;
+    --text-muted: #8899b0;
+    --sap-gold-dim: rgba(240, 171, 0, 0.18);
+    --grid-color: rgba(59,130,246,0.04);
+    --glow-color: rgba(59,130,246,0.07);
+    --h1-from: #f8fafc;
+    --h1-to: #d4dce8;
+    --card-hover-border: rgba(59,130,246,0.4);
+    --picker-filter: invert(0.8);
     color-scheme: dark;
   }
 
@@ -833,7 +833,7 @@
 
   <!-- FOOTER -->
   <footer class="footer">
-    <p>Created by <a href="https://lvit.be/" target="_blank" rel="noopener">Lode Verschelde</a></p>
+    <p>Created by <a href="https://www.lvit.be/" target="_blank" rel="noopener">Lode Verschelde</a></p>
     <hr style="border:none;border-top:1px solid var(--border);margin:1.25rem auto;max-width:200px">
     <p style="max-width:600px;margin-left:auto;margin-right:auto;line-height:1.5;font-size:0.65rem;opacity:0.5">This free tool converts SAP timestamps between the raw ABAP format (YYYYMMDDHHmmss), the human-readable format (dd.mm.yyyy HH:MM:SS), and the dot-formatted SAP GUI display with German thousand separators. All SAP EWM timestamps are stored in UTC.</p>
   </footer>
@@ -873,14 +873,6 @@
     localStorage.setItem('ewm-ts-theme', next);
     updateToggleUI();
   };
-
-  // Listen for system theme changes (if no manual override)
-  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
-    if (!localStorage.getItem('ewm-ts-theme')) {
-      document.documentElement.setAttribute('data-theme', e.matches ? 'light' : 'dark');
-      updateToggleUI();
-    }
-  });
 
   updateToggleUI();
 
