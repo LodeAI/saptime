@@ -1184,5 +1184,283 @@
 })();
 </script>
 
+<!-- =============================================================== -->
+<!-- TOOLS MENU — drop-in for LV IT SAP utility sites                  -->
+<!-- To add a new tool: append an entry to the TOOLS array below.      -->
+<!-- The current site (current:true) is listed first.                  -->
+<!-- =============================================================== -->
+<style>
+  .tools-menu-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Override the original .header-badge to make it interactive */
+  .header .header-badge {
+    cursor: pointer;
+    border: 1px solid rgba(240,171,0,0.2);
+    transition: background 0.15s, border-color 0.15s;
+    user-select: none;
+  }
+  .header .header-badge:hover {
+    background: rgba(240,171,0,0.18);
+    border-color: rgba(240,171,0,0.45);
+  }
+  .header .header-badge:focus-visible {
+    outline: 2px solid var(--sap-gold, #f0ab00);
+    outline-offset: 2px;
+  }
+
+  .tools-chevron {
+    width: 10px;
+    height: 10px;
+    fill: currentColor;
+    margin-left: 0.15rem;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .header-badge[aria-expanded="true"] .tools-chevron {
+    transform: rotate(180deg);
+  }
+
+  .tools-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.96);
+    transform-origin: top center;
+    width: 280px;
+    max-width: calc(100vw - 32px);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+    padding: 0.4rem;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+    text-align: left;
+  }
+  .tools-menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) scale(1);
+  }
+
+  .tools-menu-heading {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.75rem 0.4rem;
+  }
+
+  .tools-menu-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.12s;
+    cursor: pointer;
+  }
+  .tools-menu-item:hover {
+    background: var(--bg-input);
+  }
+  .tools-menu-item.current {
+    cursor: default;
+    opacity: 0.7;
+  }
+  .tools-menu-item.current:hover {
+    background: transparent;
+  }
+
+  .tools-menu-item-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    fill: var(--sap-gold, #f0ab00);
+  }
+
+  .tools-menu-item-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .tools-menu-item-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .tools-menu-item-domain {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .tools-menu-item.current .tools-menu-item-name::after {
+    content: ' \2022 current';
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: 0.7rem;
+  }
+
+  /* Hide on print */
+  @media print {
+    .header-badge { display: none !important; }
+    .tools-menu { display: none !important; }
+  }
+
+  /* Mobile */
+  @media (max-width: 480px) {
+    .tools-menu { width: 260px; }
+  }
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  // === Tool registry — edit this array to add/remove tools =========
+  // The current site is listed FIRST with current:true.
+  var TOOLS = [
+    {
+      name:    'SAP Timestamp Converter',
+      domain:  'saptime.be',
+      url:     'https://saptime.be/',
+      current: true
+    },
+    {
+      name:    'SAP Barcode Generator',
+      domain:  'sapbarcode.be',
+      url:     'https://sapbarcode.be/',
+      current: false
+    }
+  ];
+  // =================================================================
+
+  function init() {
+    var badge = document.querySelector('.header .header-badge');
+    if (!badge) return;
+
+    var wrapper = document.createElement('div');
+    wrapper.className = 'tools-menu-wrapper';
+    badge.parentNode.insertBefore(wrapper, badge);
+    wrapper.appendChild(badge);
+
+    badge.setAttribute('role', 'button');
+    badge.setAttribute('tabindex', '0');
+    badge.setAttribute('aria-haspopup', 'menu');
+    badge.setAttribute('aria-expanded', 'false');
+    badge.setAttribute('aria-label', 'Open tools menu');
+
+    var chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    chevron.setAttribute('class', 'tools-chevron');
+    chevron.setAttribute('viewBox', '0 0 24 24');
+    chevron.innerHTML = '<path d="M7 10l5 5 5-5z"/>';
+    badge.appendChild(chevron);
+
+    var menu = document.createElement('div');
+    menu.className = 'tools-menu';
+    menu.setAttribute('role', 'menu');
+
+    var heading = document.createElement('div');
+    heading.className = 'tools-menu-heading';
+    heading.textContent = 'SAP Tools by LV IT';
+    menu.appendChild(heading);
+
+    TOOLS.forEach(function(tool) {
+      var item;
+      if (tool.current) {
+        item = document.createElement('div');
+        item.className = 'tools-menu-item current';
+      } else {
+        item = document.createElement('a');
+        item.className = 'tools-menu-item';
+        item.href = tool.url;
+      }
+      item.setAttribute('role', 'menuitem');
+
+      var icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      icon.setAttribute('class', 'tools-menu-item-icon');
+      icon.setAttribute('viewBox', '0 0 24 24');
+      icon.innerHTML = '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>';
+      item.appendChild(icon);
+
+      var textWrap = document.createElement('div');
+      textWrap.className = 'tools-menu-item-text';
+      var nameEl = document.createElement('div');
+      nameEl.className = 'tools-menu-item-name';
+      nameEl.textContent = tool.name;
+      var domEl = document.createElement('div');
+      domEl.className = 'tools-menu-item-domain';
+      domEl.textContent = tool.domain;
+      textWrap.appendChild(nameEl);
+      textWrap.appendChild(domEl);
+      item.appendChild(textWrap);
+
+      menu.appendChild(item);
+    });
+
+    wrapper.appendChild(menu);
+
+    function open() {
+      menu.classList.add('open');
+      badge.setAttribute('aria-expanded', 'true');
+    }
+    function close() {
+      menu.classList.remove('open');
+      badge.setAttribute('aria-expanded', 'false');
+    }
+    function toggle(e) {
+      e.stopPropagation();
+      if (menu.classList.contains('open')) close(); else open();
+    }
+
+    badge.addEventListener('click', toggle);
+    badge.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle(e);
+      } else if (e.key === 'Escape') {
+        close();
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!wrapper.contains(e.target)) close();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') close();
+    });
+
+    menu.addEventListener('click', function(e) {
+      if (e.target.closest('.tools-menu-item.current')) {
+        e.stopPropagation();
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+<!-- =============================================================== -->
+<!-- END Tools menu                                                    -->
+<!-- =============================================================== -->
+
 </body>
 </html>
