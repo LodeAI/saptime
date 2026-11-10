@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://saptime.be/sitemap.xml
+Sitemap: https://saptime.lvit.be/sitemap.xml
